@@ -73,7 +73,7 @@ function initMap() {
 	        	/** If user is accessing the app for the first time, then stores the data in Local Storage and assigns it to 'info' */
 	        	else {
 	        		localStorage[key] = JSON.stringify(data.response.venues);
-	            	return data.response.venues;;
+	            	return data.response.venues;
 	        	}
 			}
 			info = getItems('keys');
@@ -82,7 +82,7 @@ function initMap() {
 		},
 		/** If API call fails for some reason, alerts the error message */
 		error: function(error){
-	    	alert(error);
+	    	alert("sorry! Could not load the data from Foursqaure API", error);
 		}
 	});
 
@@ -109,7 +109,17 @@ var Place = function(placeObj){
 /** KO MVVM to create observable array to apply filtering */
 var mapViewModel = function(){
 	var self = this;
-	this.placeArray = ko.observableArray();
+	self.placeArray = ko.observableArray();
+	self.isDrawerOpen = ko.observable(false);
+	self.hideDrawer = function(){
+		self.isDrawerOpen(false);
+		return true;
+	}
+
+	self.toggleDrawer = function(){
+		var oppositeDrawerState = !(self.isDrawerOpen());
+    	self.isDrawerOpen(oppositeDrawerState);
+	}
 	/** Iterates through each object of the results obtained from the above API call and pushes each to the obervable array */
 	info.forEach(function(place){
 		self.placeArray.push(new Place(place));
@@ -169,7 +179,7 @@ var mapViewModel = function(){
 				place.contact(results.contact.formattedPhone);
 				place.url(results.url || '');
 				/** Format the data to appear on the infowindow */
-				var infoDetails = '<div><h3>'+place.name() +'</h3><p>'+ place.formatted_address() +'</p><span>Contact: '+ place.contact() +'</span><br><a target="_blank" href="'+ place.url() +'" >'+ place.url() +'</a></div>'
+				var infoDetails = '<div><h3>'+place.name() +'</h3><p>'+ place.formatted_address() +'</p><span>Contact: '+ place.contact() +'</span><br><a target="_blank" href="'+ place.url() +'" >'+ place.url() +'</a></div>';
 				place.infowindow = new google.maps.InfoWindow();
 
 				/** On 'click' event, sets all markers' icons to default and then sets the current marker's icon to active icon  */
@@ -181,17 +191,30 @@ var mapViewModel = function(){
 		    		place.marker.setIcon(activeIcon);
 		    		place.infowindow.setContent(infoDetails);
 		    		place.infowindow.open(map, place.marker);
+
 	  			});
+	  			/** On 'closeclick' event for the infowindow, set the marker to default */
+	  			google.maps.event.addListener(place.infowindow, 'closeclick', function(){
+	  				place.marker.setIcon(defaultIcon);
+	  			});
+
 			},
 			/** Handles errors on the API call */
-			fail: function(error){
-				place.infowindow.setContent('<p>Data for this place could not be loaded!</p>')
+			error: function(error){
+				place.infowindow.setContent('<p>Data for this place could not be loaded!</p>');
 			}
 
 		});
 		gmarkers.push(place);
 	});
 
+	/** close any open infowindow , when user starts typing in the filter field */
+	self.closeInfo = function(){
+		self.placeArray().forEach(function(place){
+			place.infowindow.close();
+			place.marker.setIcon(defaultIcon);
+		});
+	};
 	/**
  	 *  @description displays the marker and corresponding infowindow when the user clicks on a reataurant name on the list, while hiding the rest of the markers and infowindows
  	 *  param {Object} placeItem - Current/Clicked place (restaurant) Object
@@ -206,12 +229,13 @@ var mapViewModel = function(){
 			placeItem.infowindow.open(map, placeItem.marker);
 		});
 		return placeItem.marker;
-	}
+	};
 
 	/** Observable array to store only places after filtering */
 	self.visiblePlaces = ko.observableArray();
 	self.listedPlaces = ko.observableArray();
 	self.placeArray().forEach(function(place){
+		//place.infowindow.close();
 		self.listedPlaces.push(place);
 	});
 	self.userInput = ko.observable('');
