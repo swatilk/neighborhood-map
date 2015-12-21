@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Neighborhood Map</title>
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
    <link rel="stylesheet" href="dist/css/style.min.css">
   <script defer src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
@@ -12,8 +13,13 @@
     <div class="row">
       <div id="list-content" class="col-md-6 col-xs-12 col-sm-12 col-lg-4">
         <h3 class="text-primary text-center">Restaurants around San Francisco</h3>
-        <div id="list-panel">
-          <input type="search" class="form-control" placeholder="keyword search" data-bind="textInput: userInput, valueUpdate: 'keyup'"></input>
+        <div class="listBtn" data-bind="click: hideDrawer">
+          <a id="show" data-bind="click: toggleDrawer, clickBubble: false">
+               <i class="fa fa-list fa-lg"></i>
+          </a>
+        </div>
+        <div id="list-panel" class="drawer" data-bind="visible: isDrawerOpen(), click: null, clickBubble: false">
+          <input id="filterList" type="search" class="form-control" placeholder="keyword search" data-bind="textInput: userInput, valueUpdate: 'keyup', event:{ 'keyup': closeInfo}"></input>
           <ul id="list-view" data-bind="foreach: listPlaces()">
             <li id="list-item"><a href="#" data-bind="text: name, click: $parent.showClickedPlace"></a></li>
           </ul>
@@ -21,7 +27,7 @@
           placeholder="Enter a location">
         </div>
       </div>
-      <div class="col-md-6 col-lg-8" id="map">
+      <div class="col-md-6 col-lg-8 col-xs-12 col-sm-12" id="map">
 
       </div>
     </div>
@@ -29,6 +35,6 @@
   <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script async src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
   <script src="dist/js/script.min.js"></script>
-  <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYcG9EzDuM4CeVjR8h8mfApu10Mu9blI0&libraries=places&callback=initMap" onerror="mapError"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYcG9EzDuM4CeVjR8h8mfApu10Mu9blI0&libraries=places&callback=initMap" onerror="mapError"></script>
 </body>
 </html>
