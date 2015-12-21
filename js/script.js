@@ -114,12 +114,12 @@ var mapViewModel = function(){
 	self.hideDrawer = function(){
 		self.isDrawerOpen(false);
 		return true;
-	}
+	};
 
 	self.toggleDrawer = function(){
 		var oppositeDrawerState = !(self.isDrawerOpen());
     	self.isDrawerOpen(oppositeDrawerState);
-	}
+	};
 	/** Iterates through each object of the results obtained from the above API call and pushes each to the obervable array */
 	info.forEach(function(place){
 		self.placeArray.push(new Place(place));
