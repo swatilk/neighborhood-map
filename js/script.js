@@ -1,8 +1,10 @@
+'user strict';
 var map, info;
 /** Initializes a text based location name, desired latitude and longitude */
-var locationName = 'San Francisco';
+var LOCATION_NAME = 'San Francisco';
 var lati = 37.7833;
 var lon = -122.4167;
+var infowindow;
 
 /**
  *  @description initializes a map with center, implements autocomplete functionality and calls Foursquare API to get place details based on text input
@@ -14,15 +16,15 @@ function initMap() {
 		zoom: 14
 	});
 
-	var input = (document.getElementById('pac-input'));
-	/** Creates the autocomplete helper, and associate it with
-	 an HTML text input box.*/
-	var autocomplete = new google.maps.places.Autocomplete(input);
-	autocomplete.bindTo('bounds', map);
+	// var input = (document.getElementById('pac-input'));
+	// /** Creates the autocomplete helper, and associate it with
+	//  an HTML text input box.*/
+	// var autocomplete = new google.maps.places.Autocomplete(input);
+	// autocomplete.bindTo('bounds', map);
 
-	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+	// map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-	var infowindow = new google.maps.InfoWindow();
+	infowindow = new google.maps.InfoWindow();
 	var marker = new google.maps.Marker({
 		map: map,
 		animation: google.maps.Animation.DROP
@@ -34,35 +36,35 @@ function initMap() {
 
 	/** Gets the full place details when the user selects a place from the
 	list of suggestions. */
-	google.maps.event.addListener(autocomplete, 'place_changed', function() {
-		infowindow.close();
-		var place = autocomplete.getPlace();
-		if (!place.geometry) {
-			return;
-		}
+	// google.maps.event.addListener(autocomplete, 'place_changed', function() {
+	// 	infowindow.close();
+	// 	var place = autocomplete.getPlace();
+	// 	if (!place.geometry) {
+	// 		return;
+	// 	}
 
-		if (place.geometry.viewport) {
-			map.fitBounds(place.geometry.viewport);
-		}
-		else {
-			map.setCenter(place.geometry.location);
-			map.setZoom(13);
-		}
+	// 	if (place.geometry.viewport) {
+	// 		map.fitBounds(place.geometry.viewport);
+	// 	}
+	// 	else {
+	// 		map.setCenter(place.geometry.location);
+	// 		map.setZoom(13);
+	// 	}
 
-		/** Sets the position of the marker using the place ID and location. */
-		marker.setPlace( ({
-			placeId: place.place_id,
-			location: place.geometry.location
-		}));
-		marker.setVisible(true);
+	// 	* Sets the position of the marker using the place ID and location.
+	// 	marker.setPlace( ({
+	// 		placeId: place.place_id,
+	// 		location: place.geometry.location
+	// 	}));
+	// 	marker.setVisible(true);
 
-		infowindow.setContent('<div><h3>'+place.name+'</h3><p>Place ID: '+ place.place_id +'</p><span>'+ place.formatted_address+'</span></div>');
-		infowindow.open(map, marker);
-	});
+	// 	infowindow.setContent('<div><h3>'+place.name+'</h3><p>Place ID: '+ place.place_id +'</p><span>'+ place.formatted_address+'</span></div>');
+	// 	infowindow.open(map, marker);
+	// });
 
 	/** Makes asynchronous call to the API, to fetch details of restaurants around given place */
 	$.ajax({
-		url:"https://api.foursquare.com/v2/venues/search?near="+locationName+"&query=restaurant&radius=1000&client_id=VHONOODDSAV1KJZ0ZWCCGUPKM1UUHE02QBEKQFRTSESI3NWG&client_secret=41ZWOUFBU4G3GHX1LNBVIJX0WOKGIMSCJM3DBHNP2ST4CYAY&v=20150806&m=foursquare",
+		url:"https://api.foursquare.com/v2/venues/search?near="+ LOCATION_NAME +"&query=restaurant&radius=1000&client_id=VHONOODDSAV1KJZ0ZWCCGUPKM1UUHE02QBEKQFRTSESI3NWG&client_secret=41ZWOUFBU4G3GHX1LNBVIJX0WOKGIMSCJM3DBHNP2ST4CYAY&v=20150806&m=foursquare",
 		dataType: "jsonp",
 		success: function(data){
 			/** Checks to see if data is stored in Local Storage, if it is, then fetches it and parses and assigns to 'info' */
@@ -175,11 +177,33 @@ var mapViewModel = function(){
 			success: function(data){
 				var results = data.response.venue;
 				var loc = results.hasOwnProperty('location') ? results.location.formattedAddress : '';
+				var name, contact, address;
 				place.formatted_address(loc);
 				place.contact(results.contact.formattedPhone);
 				place.url(results.url || '');
 				/** Format the data to appear on the infowindow */
-				var infoDetails = '<div><h3>'+place.name() +'</h3><p>'+ place.formatted_address() +'</p><span>Contact: '+ place.contact() +'</span><br><a target="_blank" href="'+ place.url() +'" >'+ place.url() +'</a></div>';
+				if(place.name() === null || place.name() === undefined){
+					name = "Name not provided";
+				}
+				else {
+					name = place.name();
+				}
+
+				if(place.formatted_address() === null || place.formatted_address() === undefined){
+					address = "Address not provided";
+				}
+				else {
+					address = place.formatted_address();
+				}
+
+				if(place.contact() === null || place.contact() === undefined){
+					contact = "Contact not provided";
+				}
+
+				else {
+					contact = place.contact();
+				}
+				var infoDetails = '<div><h3>'+ name +'</h3><p>'+ address +'</p><span>Contact: '+ contact +'</span><br><a target="_blank" href="'+ place.url() +'" >'+ place.url() +'</a></div>';
 				place.infowindow = new google.maps.InfoWindow();
 
 				/** On 'click' event, sets all markers' icons to default and then sets the current marker's icon to active icon  */
@@ -220,14 +244,7 @@ var mapViewModel = function(){
  	 *  param {Object} placeItem - Current/Clicked place (restaurant) Object
      */
 	self.showClickedPlace = function(placeItem){
-		document.getElementsByClassName('gm-style-iw').innerHTML = '';
-		self.placeArray().forEach(function(singlePlace){
-			singlePlace.infowindow.close();
-			singlePlace.marker.setIcon(defaultIcon);
-		});
-		google.maps.event.trigger(placeItem.marker, 'click', function(){
-			placeItem.infowindow.open(map, placeItem.marker);
-		});
+		google.maps.event.trigger(placeItem.marker, 'click')
 		return placeItem.marker;
 	};
 
@@ -254,10 +271,5 @@ var mapViewModel = function(){
 				return false;
 			}
 		});
-	});
-
-	/** Set the markers of all filtered places to 'visible' */
-	self.visiblePlaces().forEach(function(pl){
-		pl.marker.setVisible(true);
 	});
 };
