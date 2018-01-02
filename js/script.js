@@ -16,14 +16,6 @@ function initMap() {
 		zoom: 14
 	});
 
-	// var input = (document.getElementById('pac-input'));
-	// /** Creates the autocomplete helper, and associate it with
-	//  an HTML text input box.*/
-	// var autocomplete = new google.maps.places.Autocomplete(input);
-	// autocomplete.bindTo('bounds', map);
-
-	// map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
 	infowindow = new google.maps.InfoWindow();
 	var marker = new google.maps.Marker({
 		map: map,
@@ -33,34 +25,6 @@ function initMap() {
 	google.maps.event.addListener(marker, 'click', function() {
 		infowindow.open(map, marker);
 	});
-
-	/** Gets the full place details when the user selects a place from the
-	list of suggestions. */
-	// google.maps.event.addListener(autocomplete, 'place_changed', function() {
-	// 	infowindow.close();
-	// 	var place = autocomplete.getPlace();
-	// 	if (!place.geometry) {
-	// 		return;
-	// 	}
-
-	// 	if (place.geometry.viewport) {
-	// 		map.fitBounds(place.geometry.viewport);
-	// 	}
-	// 	else {
-	// 		map.setCenter(place.geometry.location);
-	// 		map.setZoom(13);
-	// 	}
-
-	// 	* Sets the position of the marker using the place ID and location.
-	// 	marker.setPlace( ({
-	// 		placeId: place.place_id,
-	// 		location: place.geometry.location
-	// 	}));
-	// 	marker.setVisible(true);
-
-	// 	infowindow.setContent('<div><h3>'+place.name+'</h3><p>Place ID: '+ place.place_id +'</p><span>'+ place.formatted_address+'</span></div>');
-	// 	infowindow.open(map, marker);
-	// });
 
 	/** Makes asynchronous call to the API, to fetch details of restaurants around given place */
 	$.ajax({
