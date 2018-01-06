@@ -1,28 +1,14 @@
-html, body {
+html,
+body {
 	height: 100%;
 	font-family: sans-serif;
 }
-
-/*.drawer {
-  background-color: white;
-  display: inline;
-  max-height: 400px;
-  overflow-y: scroll;
-  position: absolute;
-  width: 150px;
-  z-index: 10;
-}*/
-
-/*.listBtn {
- color: #000;
- background-color: #fff;
-}*/
 
 .fa-lg {
 	color: #fff;
 }
 
-#list-panel {
+.drawer {
 	height: 100%;
 	max-height: 550px;
 	overflow-y: scroll;
@@ -33,27 +19,24 @@ html, body {
 	background-color: #337ab7;
 }
 
-#filterList {
+.filterListClass {
 	position : fixed;
 	margin-bottom: .2em;
 	width: 91%;
 }
 
-#show-pins {
-	display: inline;
-}
 
-#list-content {
+.listContentClass {
 	background-color: #337ab7;
 	color: #fff;
 }
 
-#list-content h3 {
+.listContentClass h3 {
 	color: #fff;
 	padding: .65em;
 }
 
-#pac-input {
+.controls {
 	background-color: #fff;
 	font-size: 15px;
 	font-weight: 300;
@@ -64,25 +47,25 @@ html, body {
 	width: 20em;
 }
 
-#pac-input:focus {
+.pac-input:focus {
 	border-color: #4d90fe;
 }
 
-#list-view {
+.listView {
 	margin-top: 5%;
 	width: 100%;
 	padding: .25em;
 	height: 100%;
 }
 
-#list-item {
+.listItem {
 	list-style-type: none;
 	padding: 0.75em;
 	margin-top: .25em;
 	width: 100%;
 }
 
-#list-item a {
+.listItem a {
 	text-decoration: none;
 	color: #fff;
 	width: 100%;
@@ -92,6 +75,7 @@ html, body {
 @media(min-width: 750px){
 	.container-fluid {
 		height: 100%;
+		padding-right: 0;
 	}
 
 	div .row{
@@ -104,7 +88,7 @@ html, body {
 		display: inline;
 	}
 
-	#list-panel {
+	.drawer {
 		height: 550px;
 		max-height: 550px;
 		overflow-y: scroll;
@@ -118,7 +102,7 @@ html, body {
 }
 
 @media (min-width: 750px) and (max-width: 1199px){
-	#filterList {
+	.filterListClass {
 		position : fixed;
 		margin-bottom: .2em;
 		width: 48%;
@@ -126,7 +110,7 @@ html, body {
 }
 
 @media (max-width: 991px) and (min-width: 751px){
-	#filterList {
+	.filterListClass {
 		position : fixed;
 		margin-bottom: .2em;
 		width: 91%;
@@ -134,7 +118,7 @@ html, body {
 }
 
 @media (min-width: 1200px){
-	#filterList {
+	.filterListClass {
 		position : fixed;
 		margin-bottom: .2em;
 		width: 32%;
@@ -144,6 +128,7 @@ html, body {
 @media (max-width: 749px) and (min-width: 481px){
 	.container-fluid {
 		height: 100%;
+		padding-right: 0;
 	}
 
 	div .row{
@@ -162,6 +147,7 @@ html, body {
 @media(max-width: 480px) and (min-width: 350px){
 	.container-fluid {
 		height: 100%;
+		padding-right: 0;
 	}
 
 	div .row{
@@ -181,6 +167,7 @@ html, body {
 @media(max-width: 349px){
 	.container-fluid {
 		height: 100%;
+		padding-right: 0;
 	}
 
 	div .row{
@@ -195,7 +182,7 @@ html, body {
 		display: block;
 	}
 
-	#pac-input {
+	.controls {
 		width: 10em;
 	}
 
