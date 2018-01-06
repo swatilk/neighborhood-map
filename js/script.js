@@ -113,6 +113,7 @@ var mapViewModel = function(){
 		type: 'poly'
 	};
 
+
 	/** Iterates through each object in the observable array to create a marker for each */
 	self.placeArray().forEach(function(place){
 		latlng = {"lat":place.lat(), "lng":place.lng()};
@@ -134,11 +135,15 @@ var mapViewModel = function(){
 			}
 		}
 
+
 		/** Makes asynchronous call to the API, to fetch details of each restaurant in the observable array */
 		$.ajax({
 			url:"https://api.foursquare.com/v2/venues/"+ place.venue_id() +"?client_id=VHONOODDSAV1KJZ0ZWCCGUPKM1UUHE02QBEKQFRTSESI3NWG&client_secret=41ZWOUFBU4G3GHX1LNBVIJX0WOKGIMSCJM3DBHNP2ST4CYAY&v=20150806&m=foursquare",
 			dataType: "jsonp",
-			success: function(data){
+			timeout: 5000,
+			//jsonp: callback,
+		})
+			.done(function(data){
 				var results = data.response.venue;
 				var loc = results.hasOwnProperty('location') ? results.location.formattedAddress : '';
 				var name, contact, address;
@@ -146,27 +151,10 @@ var mapViewModel = function(){
 				place.contact(results.contact.formattedPhone);
 				place.url(results.url || '');
 				/** Format the data to appear on the infowindow */
-				if(place.name() === null || place.name() === undefined){
-					name = "Name not provided";
-				}
-				else {
-					name = place.name();
-				}
+				name = (place.name() === null || place.name() === undefined) ? "Name not provided" : place.name();
+				address = (place.formatted_address() === null || place.formatted_address() === undefined) ? "Address not provided" : place.formatted_address();
+				contact = (place.contact() === null || place.contact() === undefined) ? "Contact not provided" : place.contact();
 
-				if(place.formatted_address() === null || place.formatted_address() === undefined){
-					address = "Address not provided";
-				}
-				else {
-					address = place.formatted_address();
-				}
-
-				if(place.contact() === null || place.contact() === undefined){
-					contact = "Contact not provided";
-				}
-
-				else {
-					contact = place.contact();
-				}
 				var infoDetails = '<div><h3>'+ name +'</h3><p>'+ address +'</p><span>Contact: '+ contact +'</span><br><a target="_blank" href="'+ place.url() +'" >'+ place.url() +'</a></div>';
 				place.infowindow = new google.maps.InfoWindow();
 
@@ -186,13 +174,28 @@ var mapViewModel = function(){
 	  				place.marker.setIcon(defaultIcon);
 	  			});
 
-			},
+			})
 			/** Handles errors on the API call */
-			error: function(error){
-				place.infowindow.setContent('<p>Data for this place could not be loaded!</p>');
-			}
+			.fail(function(xhr, status, errorThrown){
+				place.infowindow = new google.maps.InfoWindow();
+				google.maps.event.addListener(place.marker, 'click', function() {
+		    		for(var i =0; i < gmarkers.length; i++){
+		    			gmarkers[i].marker.setIcon(defaultIcon);
+		    			gmarkers[i].infowindow.close();
+		    		}
+		    		place.marker.setIcon(activeIcon);
+		    		place.infowindow.setContent('<p>Data for this place could not be loaded!</p>');
+		    		place.infowindow.open(map, place.marker);
 
-		});
+	  			});
+	  			/** On 'closeclick' event for the infowindow, set the marker to default */
+	  			google.maps.event.addListener(place.infowindow, 'closeclick', function(){
+	  				place.marker.setIcon(defaultIcon);
+	  			});
+			})
+
+			.always(function( xhr, status ){
+  			});
 		gmarkers.push(place);
 	});
 
