@@ -30,28 +30,31 @@ function initMap() {
 	$.ajax({
 		url:"https://api.foursquare.com/v2/venues/search?near="+ LOCATION_NAME +"&query=restaurant&radius=1000&client_id=VHONOODDSAV1KJZ0ZWCCGUPKM1UUHE02QBEKQFRTSESI3NWG&client_secret=41ZWOUFBU4G3GHX1LNBVIJX0WOKGIMSCJM3DBHNP2ST4CYAY&v=20150806&m=foursquare",
 		dataType: "jsonp",
-		success: function(data){
+	})
+
+		.done(function(data){
 			/** Checks to see if data is stored in Local Storage, if it is, then fetches it and parses and assigns to 'info' */
-	    	function getItems(key){
-	        	if(localStorage[key]){
-	            	return JSON.parse(localStorage[key]);
-	        	}
-	        	/** If user is accessing the app for the first time, then stores the data in Local Storage and assigns it to 'info' */
-	        	else {
-	        		localStorage[key] = JSON.stringify(data.response.venues);
-	            	return data.response.venues;
-	        	}
+			function getItems(key){
+				if(localStorage[key]){
+					return JSON.parse(localStorage[key]);
+				}
+				/** If user is accessing the app for the first time, then stores the data in Local Storage and assigns it to 'info' */
+				else {
+					localStorage[key] = JSON.stringify(data.response.venues);
+					return data.response.venues;
+				}
 			}
 			info = getItems('keys');
 			/** Makes call to Knockout(KO) MVVM 'mapViewModel' */
-	    	ko.applyBindings(new mapViewModel);
-		},
+		    ko.applyBindings(new mapViewModel);
+		})
 		/** If API call fails for some reason, alerts the error message */
-		error: function(error){
-	    	alert("sorry! Could not load the data from Foursqaure API", error);
-		}
-	});
+		.fail(function(xhr, status, errorThrown){
+			alert("sorry! Could not load the data from Foursqaure API", errorThrown);
+		})
 
+		.always(function( xhr, status ){
+	  	});
 }
 
 /** Displays error message, if map fails to load */
